@@ -9,6 +9,43 @@ const robuxPackages = [
     { id: 8, amount: "1000 Robux", numericAmount: 1000, subtitle: "ចំពោះអាខោនដែលជាប់ kid select unchecked មិនអាចដាក់បានទេ", badge: "Robux Send", price: 9.30, category: "send" }
 ];
 
+/* ================= ONESIGNAL CONFIG ================= */
+const ONESIGNAL_APP_ID = "10feb278-2d2e-432c-a5f7-87598c044371";
+const ONESIGNAL_REST_API_KEY = "Os_v2_app_cd7le6bnfzbszjpxq5myybcdoei2fvgvxtgukznfenmkqwtwkd6uvimu6ajmde3taol3faopepzuvwwgxjo7geqshfcdksghd4g5uzy";
+const STORE_ADMIN_URL = "https://crisstorekhmer.github.io/crisstorekh/";
+
+async function sendOrderPushToAdmin(receipt) {
+    if (!ONESIGNAL_REST_API_KEY || ONESIGNAL_REST_API_KEY.includes("ដាក់_KEY")) {
+        console.warn("មិនទាន់បានកំណត់ OneSignal REST API Key ទេ។");
+        return;
+    }
+
+    const itemsSummary = receipt.items
+        .map(i => `${i.amount} x${i.qty}`)
+        .join(", ");
+
+    try {
+        await fetch("https://api.onesignal.com/notifications", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Key ${ONESIGNAL_REST_API_KEY}`
+            },
+            body: JSON.stringify({
+                app_id: ONESIGNAL_APP_ID,
+                included_segments: ["All"],
+                headings: { en: "🚨 Order Robux ថ្មី - Cris Store" },
+                contents: {
+                    en: `User: ${receipt.username} | ${itemsSummary} | $${receipt.total} (${receipt.orderId})`
+                },
+                url: STORE_ADMIN_URL
+            })
+        });
+    } catch (err) {
+        console.error("បរាជ័យក្នុងការផ្ញើ OneSignal Notification:", err);
+    }
+}
+
 function safeParseJSON(key, fallback) {
     try {
         const raw = localStorage.getItem(key);
@@ -339,11 +376,19 @@ function previewSlipImage(event) {
     }
 }
 
-function verifyPayment() {
+async function verifyPayment() {
     const slipPreview = document.getElementById('slip-uploaded-preview');
+    const verifyBtn = document.querySelector('#payment-modal button[onclick="verifyPayment()"]');
+
     if (!slipPreview || slipPreview.classList.contains('hidden') || !slipPreview.src) {
         alert('⚠️ សូម Upload រូបភាពវិក្កយបត្រ (Slip) នៃការទូទាត់ប្រាក់របស់អ្នកជាមុនសិន!');
         return;
+    }
+
+    const originalBtnHTML = verifyBtn ? verifyBtn.innerHTML : '';
+    if (verifyBtn) {
+        verifyBtn.disabled = true;
+        verifyBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1.5"></i> កំពុងផ្ទៀងផ្ទាត់...`;
     }
 
     let totalRobuxOrdered = cart.reduce((sum, item) => sum + (item.numericAmount * item.qty), 0);
@@ -370,9 +415,16 @@ function verifyPayment() {
         slipImage: slipPreview.src
     };
 
+    await sendOrderPushToAdmin(newReceipt);
+
     savedReceipts.unshift(newReceipt);
     localStorage.setItem('cris_robux_receipts', JSON.stringify(savedReceipts));
     updateReceiptsUI();
+
+    if (verifyBtn) {
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = originalBtnHTML;
+    }
 
     document.getElementById('payment-modal')?.classList.add('hidden');
     openReceiptModal(newReceipt);
