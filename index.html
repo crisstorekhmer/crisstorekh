@@ -2,107 +2,151 @@
 <html lang="km" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cris Store - ហាងលក់ Robux សុវត្ថិភាព និងតម្លៃសមរម្យ</title>
-    <!-- Tailwind CSS & Configuration for Dark Mode -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Cris Store - ហាងលក់ Robux សុវត្ថិភាព 🎄 Merry Christmas & Happy New Year</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-        }
+        tailwind.config = { darkMode: 'class' }
     </script>
+    <!-- html2canvas សម្រាប់ទាញយកវិក្កយបត្រជារូបភាព -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300">
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 overflow-x-hidden relative">
+
+    <!-- 🎄 Snowfall Animation Container -->
+    <div id="snow-container" class="fixed inset-0 pointer-events-none z-30 overflow-hidden"></div>
+
+    <!-- Warning Popup Modal (លេចឡើងរាល់ពេលចូល Website) -->
+    <div id="warning-popup-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border-2 border-red-500/50 rounded-2xl w-full max-w-md p-4 sm:p-5 shadow-2xl relative text-center space-y-4 animate-scaleUp">
+            <!-- ប៊ូតុង X សម្រាប់បិទ -->
+            <button onclick="closeWarningPopup()" class="absolute top-3 right-3 w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-rose-500 hover:text-white text-slate-500 flex items-center justify-center transition shadow">
+                <i class="fas fa-times text-base"></i>
+            </button>
+
+            <!-- រូបភាពព្រមាន (Kid Select Unchecked) -->
+            <div class="pt-2">
+                <div class="rounded-2xl overflow-hidden shadow-lg border border-red-500/30 inline-block">
+                    <img src="logo/warning-img.jpg" alt="Warning Notice" class="w-full h-auto object-cover max-h-[70vh]">
+                </div>
+            </div>
+
+            <!-- ប៊ូតុងយល់ព្រមបិទ -->
+            <button onclick="closeWarningPopup()" class="w-full bg-gradient-to-r from-red-600 to-emerald-600 text-white py-3 rounded-xl font-bold text-sm shadow-lg hover:opacity-95 transition">
+                <i class="fas fa-gift mr-1.5"></i> ខ្ញុំបានយល់ដឹង (បិទ) 🎄
+            </button>
+        </div>
+    </div>
 
     <!-- Navbar -->
-    <header class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 transition-colors duration-300">
+    <header class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-red-500/20 sticky top-0 z-40 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <!-- Brand Logo -->
-            <a href="#" class="flex items-center space-x-2.5">
-                <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-blue-500/20 border border-blue-500/30 flex items-center justify-center bg-slate-900">
-                    <img src="logo/store-logo.jpg" alt="Cris Store Logo" class="w-full h-full object-cover">
+            <a href="#" class="flex items-center space-x-2.5 shrink-0">
+                <div class="relative">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-lg border border-red-500/40 flex items-center justify-center bg-slate-900">
+                        <img src="logo/store-logo.jpg" alt="Logo" class="w-full h-full object-cover">
+                    </div>
+                    <!-- 🎅 Christmas Hat Icon on Logo -->
+                    <span class="absolute -top-2 -right-1.5 text-red-500 text-sm drop-shadow">🎅</span>
                 </div>
                 <div>
-                    <span class="text-xl font-bold text-slate-900 dark:text-white tracking-wide">CRIS <span class="text-emerald-600 dark:text-emerald-400">STORE</span></span>
-                    <span class="block text-[10px] text-emerald-600 dark:text-emerald-400 font-medium"><i class="fas fa-check-circle"></i> Trusted Robux Shop</span>
+                    <span class="text-lg sm:text-xl font-bold tracking-wide">CRIS <span class="text-red-500">STORE</span></span>
+                    <span class="block text-[9px] sm:text-[10px] text-emerald-600 dark:text-emerald-400 font-medium"><i class="fas fa-check-circle"></i> Trusted Robux Shop</span>
                 </div>
             </a>
 
-            <!-- Navigation Links -->
-            <nav class="hidden md:flex space-x-8 font-medium text-sm">
-                <a href="#home" class="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition">ទំព័រដើម</a>
-                <a href="#packages" class="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition">កញ្ចប់ Robux</a>
-                <a href="#how-to-buy" class="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition">របៀបទិញ & សុវត្ថិភាព</a>
-                <a href="#contact" class="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition">ទំនាក់ទំនង</a>
+            <nav class="hidden lg:flex space-x-8 font-medium text-sm">
+                <a href="#home" class="text-slate-600 dark:text-slate-300 hover:text-red-500 transition">ទំព័រដើម</a>
+                <a href="#packages" class="text-slate-600 dark:text-slate-300 hover:text-red-500 transition">កញ្ចប់ Robux</a>
+                <a href="#how-to-buy" class="text-slate-600 dark:text-slate-300 hover:text-red-500 transition">របៀបទិញ & សុវត្ថិភាព</a>
+                <a href="#contact" class="text-slate-600 dark:text-slate-300 hover:text-red-500 transition">ទំនាក់ទំនង</a>
             </nav>
 
-            <!-- Theme Toggle & Cart Buttons -->
-            <div class="flex items-center space-x-2.5">
-                <button onclick="toggleTheme()" id="theme-toggle" title="ប្តូរពណ៌ផ្ទៃ (Dark / Light Mode)" class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-slate-700 dark:text-amber-400 transition border border-slate-200 dark:border-slate-700">
-                    <i id="theme-icon" class="fas fa-sun text-lg"></i>
+            <div class="flex items-center space-x-2">
+                <button onclick="toggleTheme()" id="theme-toggle" class="w-10 h-10 flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-amber-400 transition border border-slate-200 dark:border-slate-700">
+                    <i id="theme-icon" class="fas fa-sun text-base"></i>
                 </button>
-
-                <button onclick="toggleCart()" class="relative p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-emerald-600 dark:text-emerald-400 transition border border-slate-200 dark:border-slate-700">
-                    <i class="fas fa-shopping-bag text-lg"></i>
-                    <span id="cart-count" class="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                <button onclick="toggleReceiptsModal()" title="ប្រវត្តិវិក្កយបត្រ" class="relative w-10 h-10 flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-cyan-500 transition border border-slate-200 dark:border-slate-700">
+                    <i class="fas fa-receipt text-base"></i>
+                    <span id="receipt-count" class="hidden absolute -top-1.5 -right-1.5 bg-cyan-500 text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
+                </button>
+                <button onclick="toggleCart()" title="កន្ត្រកទំនិញ" class="relative w-10 h-10 flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-emerald-500 transition border border-slate-200 dark:border-slate-700">
+                    <i class="fas fa-shopping-bag text-base"></i>
+                    <span id="cart-count" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
+                </button>
+                <button onclick="toggleMobileMenu()" class="lg:hidden w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+                    <i id="mobile-menu-icon" class="fas fa-bars text-base"></i>
                 </button>
             </div>
         </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 pt-2 pb-4 space-y-1">
+            <a href="#home" onclick="toggleMobileMenu()" class="block px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-red-500/10 hover:text-red-500 transition"><i class="fas fa-home w-5 text-red-500"></i> ទំព័រដើម</a>
+            <a href="#packages" onclick="toggleMobileMenu()" class="block px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-red-500/10 hover:text-red-500 transition"><i class="fas fa-cube w-5 text-red-500"></i> កញ្ចប់ Robux</a>
+            <a href="#how-to-buy" onclick="toggleMobileMenu()" class="block px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-red-500/10 hover:text-red-500 transition"><i class="fas fa-shield-alt w-5 text-red-500"></i> របៀបទិញ & សុវត្ថិភាព</a>
+            <button onclick="toggleMobileMenu(); toggleReceiptsModal();" class="w-full text-left block px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-red-500/10 hover:text-red-500 transition"><i class="fas fa-receipt w-5 text-cyan-500"></i> វិក្កយបត្ររបស់ខ្ញុំ</button>
+            <a href="#contact" onclick="toggleMobileMenu()" class="block px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-red-500/10 hover:text-red-500 transition"><i class="fas fa-headset w-5 text-red-500"></i> ទំនាក់ទំនង</a>
+        </div>
     </header>
 
-    <!-- Hero Banner -->
-    <section id="home" class="relative overflow-hidden py-16 md:py-24 bg-gradient-to-b from-slate-100 to-slate-50 dark:from-slate-900 dark:to-slate-950 border-b border-slate-200 dark:border-slate-800/60 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-10">
-            <div class="md:w-1/2 z-10">
-                <div class="inline-flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold px-3 py-1.5 rounded-full mb-4">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Robux ស្អាត ១០០% • មិនប៉ះពាល់ Account • មិនសួររក Password</span>
+    <!-- Hero Banner with Christmas Vibe -->
+    <section id="home" class="py-12 sm:py-16 lg:py-24 bg-gradient-to-b from-red-950/20 via-slate-100 to-slate-50 dark:from-red-950/40 dark:via-slate-900 dark:to-slate-950 border-b border-red-500/20 relative overflow-hidden">
+        <div class="absolute top-10 left-10 w-72 h-72 bg-red-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-10 right-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 relative z-10">
+            <div class="w-full lg:w-1/2 text-center lg:text-left">
+                <div class="inline-flex items-center space-x-2 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-4 shadow-sm">
+                    <span>🎄 Merry Christmas Season • 100% Secure</span>
                 </div>
-                <h1 class="text-3xl md:text-5xl font-bold leading-tight text-slate-900 dark:text-white">
-                    ទិញ <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-cyan-600 dark:from-emerald-400 dark:to-cyan-400">Robux Send</span> តម្លៃសមរម្យ និងសុវត្ថិភាពខ្ពស់បំផុត
+                <h1 class="text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight">
+                    អបអរសាទរបុណ្យណូអែល! ទិញ <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-emerald-500">Robux Send</span> នៅ Cris Store
                 </h1>
-                <p class="mt-4 text-slate-600 dark:text-slate-400 text-base md:text-lg leading-relaxed">
-                    សេវាកម្មបញ្ចូល Robux Send ផ្លូវការ ឆាប់រហ័សទាន់ចិត្ត។ ប្រើប្រាស់តែ Roblox Username ប៉ុណ្ណោះ ធានាសុវត្ថិភាពគណនី ១០០%។
+                <p class="mt-4 text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
+                    រីករាយរដូវកាលបុណ្យណូអែលសម្រាប់អ្នកលេង Roblox! បញ្ចូលរហ័ស ស្អាត ១០០% ប្រើប្រាស់ត្រឹមតែ Username មិនបាច់សួររក Password ឡើយ។
                 </p>
-                <div class="mt-8 flex flex-wrap gap-4">
-                    <a href="#packages" class="bg-gradient-to-r from-emerald-500 to-cyan-600 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-emerald-500/25 hover:opacity-90 transition">
-                        <i class="fas fa-cube mr-2"></i>ជ្រើសរើសកញ្ចប់ Robux
+                <div class="mt-6 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
+                    <a href="#packages" class="w-full sm:w-auto text-center bg-gradient-to-r from-red-600 to-emerald-600 text-white font-semibold px-6 py-3.5 rounded-xl shadow-lg shadow-red-500/25 hover:opacity-90 transition">
+                        <i class="fas fa-gifts mr-2"></i>កញ្ចប់ Robux
                     </a>
-                    <a href="#how-to-buy" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold px-6 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition">
-                        របៀបទិញដោយសុវត្ថិភាព
-                    </a>
+                    <button onclick="toggleReceiptsModal()" class="w-full sm:w-auto text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold px-6 py-3.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                        <i class="fas fa-receipt text-cyan-500 mr-2"></i>មើលវិក្កយបត្រ
+                    </button>
                 </div>
             </div>
 
-            <div class="md:w-5/12 w-full">
-                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xl dark:shadow-2xl transition-colors duration-300">
+            <!-- Stock Card -->
+            <div class="w-full sm:max-w-lg lg:w-5/12">
+                <div class="bg-white dark:bg-slate-900 border-2 border-red-500/30 rounded-2xl p-5 sm:p-6 shadow-2xl relative">
+                    <div class="absolute -top-3 right-4 bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow">🎄 Christmas</div>
+                    
                     <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
                         <div class="flex items-center space-x-3">
-                            <div class="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center overflow-hidden border border-emerald-500/20">
-                                <img id="stock-img" src="logo/stonk-has.jpg" alt="Stonk Icon" class="w-full h-full object-cover">
+                            <div class="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center border border-red-500/20 overflow-hidden">
+                                <img id="stock-img" src="logo/stonk-has.jpg" alt="Stock" class="w-full h-full object-cover">
                             </div>
                             <div>
-                                <h3 class="font-bold text-slate-900 dark:text-white text-lg">ស្ថានភាពស្តុក Robux</h3>
-                                <p id="stock-status-sub" class="text-xs text-emerald-600 dark:text-emerald-400 flex items-center mt-0.5">
-                                    <span class="w-2 h-2 bg-emerald-500 dark:bg-emerald-400 rounded-full animate-ping mr-2"></span>
-                                    មានស្តុកគ្រប់គ្រាន់ (Ready Stock)
+                                <h3 class="font-bold text-base sm:text-lg">ស្ថានភាពស្តុក Robux</h3>
+                                <p id="stock-status-sub" class="text-xs text-emerald-500 flex items-center mt-0.5">
+                                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping mr-2"></span>មានស្តុកត្រៀមរួចរាល់
                                 </p>
                             </div>
                         </div>
-                        <span class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700">100% Clean</span>
+                        <span class="bg-red-500/10 text-red-500 text-xs px-2.5 py-1 rounded-lg border border-red-500/20 font-bold">Ready</span>
                     </div>
-
-                    <div class="mt-5 space-y-3 text-sm">
-                        <div class="flex justify-between p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800/80">
-                            <span class="text-slate-600 dark:text-slate-400"><i class="fas fa-paper-plane text-emerald-600 dark:text-emerald-400 mr-2"></i>Robux Send</span>
-                            <span id="stock-display" class="text-emerald-600 dark:text-emerald-400 font-bold">In stock 3000</span>
+                    <div class="mt-4 space-y-3 text-xs sm:text-sm">
+                        <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                            <span class="text-slate-500"><i class="fas fa-paper-plane text-red-500 mr-2"></i>Robux Send</span>
+                            <span id="stock-display" class="text-emerald-500 font-bold">In stock 3000</span>
                         </div>
-                        <div class="flex justify-between p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800/80">
-                            <span class="text-slate-600 dark:text-slate-400"><i class="fas fa-user-shield text-cyan-600 dark:text-cyan-400 mr-2"></i>សុវត្ថិភាព Account</span>
-                            <span class="text-slate-900 dark:text-white font-semibold">មិនត្រូវការ Password ឡើយ</span>
+                        <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                            <span class="text-slate-500"><i class="fas fa-user-shield text-cyan-500 mr-2"></i>សុវត្ថិភាព Account</span>
+                            <span class="font-semibold">មិនត្រូវការ Password ឡើយ</span>
                         </div>
                     </div>
                 </div>
@@ -111,204 +155,399 @@
     </section>
 
     <!-- Custom Robux Calculator Section -->
-    <section class="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-emerald-500/10 border border-emerald-500/30 rounded-2xl p-6 sm:p-8 shadow-lg backdrop-blur-sm">
+    <section class="py-8 sm:py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-gradient-to-r from-red-500/10 via-emerald-500/10 to-red-500/10 border-2 border-red-500/30 rounded-2xl p-5 sm:p-8 shadow-lg">
             <div class="max-w-xl mx-auto text-center">
-                <span class="bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold px-3 py-1 rounded-full uppercase">
-                    <i class="fas fa-calculator mr-1"></i> កុម្មង់ចំនួនតាមចិត្ត (Custom Amount)
+                <span class="bg-red-500 text-white text-xs font-bold px-3.5 py-1 rounded-full uppercase shadow">
+                    <i class="fas fa-calculator mr-1"></i> កុម្មង់ចំនួនតាមចិត្ត (Custom)
                 </span>
-                <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-3">ចង់ទិញចំនួនប៉ុន្មានក៏បាន (ចាប់ពី 10 Robux ឡើងទៅ)</h3>
-                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">អត្រាតម្លៃ៖ 100 Robux = $1.00</p>
+                <h3 class="text-lg sm:text-2xl font-bold mt-3">ចង់ទិញចំនួនប៉ុន្មានក៏បាន (ចាប់ពី 10 Robux ឡើងទៅ)</h3>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">អត្រាតម្លៃ៖ 100 Robux = $1.00</p>
                 
-                <div class="mt-6 flex flex-col sm:flex-row items-center gap-4">
+                <div class="mt-5 flex flex-col sm:flex-row items-center gap-3">
                     <div class="w-full text-left">
-                        <label for="custom-robux-input" class="text-xs font-medium text-slate-600 dark:text-slate-400">បញ្ចូលចំនួន Robux (អប្បបរមា 10):</label>
-                        <input type="number" id="custom-robux-input" min="10" value="100" oninput="calculateCustomPrice()" class="w-full mt-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 font-bold">
+                        <label class="text-xs text-slate-600 dark:text-slate-400 font-medium">បញ្ចូលចំនួន Robux:</label>
+                        <input type="number" id="custom-robux-input" min="10" value="100" oninput="calculateCustomPrice()" class="w-full mt-1 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-base font-bold focus:outline-none focus:border-red-500">
                     </div>
-                    <div class="w-full sm:w-40 text-left sm:text-right sm:pt-4">
+                    <div class="w-full sm:w-44 bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-300 dark:border-slate-700 flex sm:block items-center justify-between text-left sm:text-right">
                         <span class="text-xs text-slate-500 dark:text-slate-400 block">តម្លៃសរុប៖</span>
-                        <span id="custom-price-display" class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">$1.00</span>
+                        <span id="custom-price-display" class="text-xl sm:text-2xl font-bold text-red-500">$1.00</span>
                     </div>
                 </div>
                 
-                <button onclick="addCustomToCart()" class="mt-5 w-full bg-gradient-to-r from-emerald-500 to-cyan-600 text-white py-3 rounded-xl font-bold hover:opacity-90 transition shadow-lg shadow-emerald-500/25 flex items-center justify-center space-x-2">
+                <button onclick="addCustomToCart()" class="mt-4 w-full bg-gradient-to-r from-red-600 to-emerald-600 text-white py-3.5 rounded-xl font-bold hover:opacity-90 transition shadow-lg shadow-red-500/25 flex items-center justify-center space-x-2">
                     <i class="fas fa-shopping-bag"></i>
-                    <span>បន្ថែមចូលកន្ត្រក (Add Custom to Cart)</span>
+                    <span>បន្ថែមចូលកន្ត្រក</span>
                 </button>
             </div>
         </div>
     </section>
 
     <!-- Robux Packages Section -->
-    <section id="packages" class="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
+    <section id="packages" class="py-8 sm:py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-10 gap-4">
             <div>
-                <h2 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">កញ្ចប់ Robux ត្រៀមស្រាប់</h2>
-                <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">ជ្រើសរើសចំនួនកញ្ចប់ដោយចុចសញ្ញា + ឬ - រួចបន្ថែមចូលកន្ត្រក</p>
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-bold flex items-center">កញ្ចប់ Robux ត្រៀមស្រាប់ <span class="ml-2 text-xl">🎁</span></h2>
+                <p class="text-slate-500 text-xs sm:text-sm mt-1">ជ្រើសរើសចំនួនកញ្ចប់ដោយចុចសញ្ញា + ឬ - រួចបន្ថែមចូលកន្ត្រក</p>
             </div>
-            <!-- Category Filters -->
-            <div class="flex space-x-2 overflow-x-auto pb-2">
-                <button onclick="filterProducts('all', this)" class="filter-btn active-filter px-4 py-2 rounded-xl text-sm font-medium transition">ទាំងអស់</button>
-                <button onclick="filterProducts('send', this)" class="filter-btn default-filter px-4 py-2 rounded-xl text-sm font-medium transition">Robux Send</button>
+            <div class="flex space-x-2 overflow-x-auto pb-1">
+                <button onclick="filterProducts('all', this)" class="filter-btn active-filter px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition whitespace-nowrap">ទាំងអស់</button>
+                <button onclick="filterProducts('send', this)" class="filter-btn default-filter px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition whitespace-nowrap">Robux Send</button>
             </div>
         </div>
-
-        <!-- Product Grid -->
-        <div id="product-list" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            <!-- Robux packages injected via JavaScript -->
-        </div>
+        <div id="product-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6"></div>
     </section>
 
-    <!-- How to Buy & Safety Guarantee -->
-    <section id="how-to-buy" class="py-14 bg-white dark:bg-slate-900/40 border-y border-slate-200 dark:border-slate-800/60 transition-colors duration-300 mt-8">
+    <!-- How to Buy -->
+    <section id="how-to-buy" class="py-12 bg-white dark:bg-slate-900/40 border-y border-red-500/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-2xl mx-auto mb-10">
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">ហេតុអ្វីត្រូវទិញ Robux នៅ Cris Store?</h2>
-                <p class="text-slate-600 dark:text-slate-400 text-sm mt-2">យើងផ្តល់អាទិភាពខ្ពស់បំផុតលើសុវត្ថិភាពគណនី Roblox របស់អតិថិជន</p>
+            <div class="text-center max-w-2xl mx-auto mb-8">
+                <h2 class="text-xl sm:text-2xl font-bold">ហេតុអ្វីត្រូវទិញ Robux នៅ Cris Store?</h2>
+                <p class="text-slate-500 text-xs sm:text-sm mt-2">យើងផ្តល់សេវាកម្មរហ័សទាន់ចិត្ត និងសុវត្ថិភាពខ្ពស់បំផុត</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-slate-50 dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
-                    <div class="w-11 h-11 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center text-lg mb-4 border border-emerald-500/20">
-                        <i class="fas fa-lock"></i>
-                    </div>
-                    <h3 class="font-bold text-base text-slate-900 dark:text-white">១. មិនបាច់ផ្តល់ Password</h3>
-                    <p class="text-slate-600 dark:text-slate-400 text-sm mt-2">គ្រាន់តែផ្តល់ Roblox Username របស់អ្នកប៉ុណ្ណោះ គណនីរបស់អ្នកមានសុវត្ថិភាព ១០០%។</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                <div class="bg-slate-50 dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                    <div class="w-11 h-11 bg-red-500/10 text-red-500 rounded-xl flex items-center justify-center text-lg mb-4 border border-red-500/20"><i class="fas fa-lock"></i></div>
+                    <h3 class="font-bold text-base">១. មិនបាច់ផ្តល់ Password</h3>
+                    <p class="text-slate-500 text-xs sm:text-sm mt-2">គ្រាន់តែផ្តល់ Roblox Username របស់អ្នកប៉ុណ្ណោះ គណនីមានសុវត្ថិភាព ១០០%។</p>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
-                    <div class="w-11 h-11 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 rounded-xl flex items-center justify-center text-lg mb-4 border border-cyan-500/20">
-                        <i class="fas fa-check-double"></i>
-                    </div>
-                    <h3 class="font-bold text-base text-slate-900 dark:text-white">២. Robux សុទ្ធ គ្មានការ Ban</h3>
-                    <p class="text-slate-600 dark:text-slate-400 text-sm mt-2">Robux ទាំងអស់បានមកពីប្រភពស្របច្បាប់ ១០០% ធានាមិនមានបញ្ហាដកហូត ឬ Ban Account ពេលក្រោយឡើយ។</p>
+                <div class="bg-slate-50 dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                    <div class="w-11 h-11 bg-emerald-500/10 text-emerald-500 rounded-xl flex items-center justify-center text-lg mb-4 border border-emerald-500/20"><i class="fas fa-check-double"></i></div>
+                    <h3 class="font-bold text-base">២. Robux សុទ្ធ គ្មានការ Ban</h3>
+                    <p class="text-slate-500 text-xs sm:text-sm mt-2">Robux ទាំងអស់បានមកពីប្រភពស្របច្បាប់ ធានាមិនមានបញ្ហា Ban Account ពេលក្រោយឡើយ។</p>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
-                    <div class="w-11 h-11 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center text-lg mb-4 border border-amber-500/20">
-                        <i class="fas fa-headset"></i>
-                    </div>
-                    <h3 class="font-bold text-base text-slate-900 dark:text-white">៣. បម្រើសេវាកម្មរហ័ស</h3>
-                    <p class="text-slate-600 dark:text-slate-400 text-sm mt-2">ក្រុមការងារ Cris Store រង់ចាំជួយដោះស្រាយ និងដំណើរការបញ្ចូល Robux ជូនយ៉ាងឆាប់រហ័ស។</p>
+                <div class="bg-slate-50 dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                    <div class="w-11 h-11 bg-amber-500/10 text-amber-500 rounded-xl flex items-center justify-center text-lg mb-4 border border-amber-500/20"><i class="fas fa-headset"></i></div>
+                    <h3 class="font-bold text-base">៣. បម្រើសេវាកម្មរហ័ស</h3>
+                    <p class="text-slate-500 text-xs sm:text-sm mt-2">ក្រុមការងារ Cris Store រង់ចាំជួយដោះស្រាយ និងបញ្ចូល Robux ជូនយ៉ាងឆាប់រហ័ស។</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer & Contact -->
-    <footer id="contact" class="bg-slate-100 dark:bg-slate-900 py-14 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-10">
+    <!-- Footer -->
+    <footer id="contact" class="bg-slate-100 dark:bg-slate-900 py-10 sm:py-14 border-t border-red-500/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-2.5">
                     <img src="logo/store-logo.jpg" alt="Logo" class="w-8 h-8 rounded-lg object-cover">
-                    <span class="text-2xl font-bold text-slate-900 dark:text-white">CRIS <span class="text-emerald-600 dark:text-emerald-400">STORE</span></span>
+                    <span class="text-xl font-bold">CRIS <span class="text-red-500">STORE</span> 🎄</span>
                 </div>
-                <p class="mt-4 text-slate-600 dark:text-slate-400 text-sm leading-relaxed max-w-md">
-                    ហាងលក់ Robux ផ្លូវការសម្រាប់អ្នកលេង Roblox នៅកម្ពុជា។ ផ្តោតលើតម្លៃសមរម្យ សុវត្ថិភាពគណនី និងភាពស្មោះត្រង់ជាចម្បង។
+                <p class="mt-4 text-slate-500 text-xs sm:text-sm leading-relaxed max-w-md">
+                    ហាងលក់ Robux ផ្លូវការសម្រាប់អ្នកលេង Roblox នៅកម្ពុជា។ សូមជូនពរឱ្យមានថ្ងៃបុណ្យណូអែលដ៏រីករាយ!
                 </p>
-                <div class="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
-                    <span class="bank-aba px-3 py-1.5 rounded-lg border">ABA Pay</span>
-                    <span class="bank-khqr px-3 py-1.5 rounded-lg border">KHQR</span>
-                    <span class="bank-wing px-3 py-1.5 rounded-lg border">Wing</span>
-                    <span class="bank-acleda px-3 py-1.5 rounded-lg border">ACLEDA</span>
+                <div class="mt-4 flex flex-wrap gap-2.5 text-xs font-bold">
+                    <span class="bank-badge bank-aba px-3 py-1.5 rounded-xl"><i class="fas fa-university"></i> ABA Pay</span>
+                    <span class="bank-badge bank-khqr px-3 py-1.5 rounded-xl"><i class="fas fa-qrcode"></i> KHQR</span>
+                    <span class="bank-badge bank-wing px-3 py-1.5 rounded-xl"><i class="fas fa-wallet"></i> Wing</span>
+                    <span class="bank-badge bank-acleda px-3 py-1.5 rounded-xl"><i class="fas fa-landmark"></i> ACLEDA</span>
                 </div>
             </div>
             <div>
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white">ទំនាក់ទំនងបញ្ជាទិញ & ជំនួយការ</h3>
-                <ul class="mt-4 space-y-3 text-sm text-slate-700 dark:text-slate-300">
-                    <li><i class="fab fa-telegram text-emerald-600 dark:text-emerald-400 w-6"></i> Telegram: <a href="https://t.me/Cris_Onlyyou" target="_blank" class="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">@Cris_Onlyyou</a></li>
-                    <li><i class="fab fa-facebook text-emerald-600 dark:text-emerald-400 w-6"></i> Facebook Page: <a href="https://www.facebook.com/share/1DZ7VQG35M/?mibextid=wwXIfr" target="_blank" class="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">Cris Store</a></li>
-                    <li><i class="fas fa-clock text-emerald-600 dark:text-emerald-400 w-6"></i> ម៉ោងដំណើរការ៖ 7:00 ព្រឹក - 11:00 យប់ (រៀងរាល់ថ្ងៃ)</li>
+                <h3 class="text-base sm:text-lg font-bold">ទំនាក់ទំនងបញ្ជាទិញ & ជំនួយការ</h3>
+                <ul class="mt-4 space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                    <li><i class="fab fa-telegram text-red-500 w-6"></i> Telegram: <a href="https://t.me/Cris_Onlyyou" target="_blank" class="text-red-500 font-medium hover:underline">@Cris_Onlyyou</a></li>
+                    <li><i class="fab fa-facebook text-red-500 w-6"></i> Facebook Page: <a href="https://www.facebook.com/share/1DZ7VQG35M/?mibextid=wwXIfr" target="_blank" class="text-red-500 font-medium hover:underline">Cris Store</a></li>
+                    <li class="flex items-start"><i class="fas fa-clock text-red-500 w-6 mt-0.5"></i> <span>ម៉ោងដំណើរការ៖ 7:00 ព្រឹក - 11:00 យប់</span></li>
                 </ul>
             </div>
         </div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 pt-6 border-t border-slate-200 dark:border-slate-800 text-center text-slate-500 text-xs">
-            &copy; 2026 Cris Store. រក្សាសិទ្ធិគ្រប់យ៉ាង។ Not affiliated with Roblox Corporation.
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 text-center text-slate-500 text-xs">
+            &copy; 2026 Cris Store. Merry Christmas & Happy New Year! Not affiliated with Roblox Corporation.
         </div>
     </footer>
 
-    <!-- Modern Shopping Cart & Roblox Checkout Drawer Modal -->
-    <div id="cart-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 hidden transition-opacity duration-300 flex justify-end">
-        <div class="bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 w-full max-w-md h-full flex flex-col justify-between shadow-2xl transition-all duration-300 transform translate-x-0">
-            
-            <!-- Cart Header -->
-            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/50">
+    <!-- Interactive Live Chat Bot Widget -->
+    <div class="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+        <div id="live-chat-window" class="hidden mb-3 w-[calc(100vw-2.5rem)] sm:w-96 bg-white dark:bg-slate-900 border border-red-500/30 rounded-2xl shadow-2xl overflow-hidden flex flex-col transition-all duration-300 origin-bottom-right">
+            <div class="bg-gradient-to-r from-red-600 to-emerald-600 p-3.5 text-white flex items-center justify-between">
                 <div class="flex items-center space-x-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                        <i class="fas fa-shopping-bag text-sm"></i>
+                    <div class="relative">
+                        <img src="logo/store-logo.jpg" alt="Bot" class="w-9 h-9 rounded-full object-cover border-2 border-white/40">
+                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-300 border-2 border-red-600 rounded-full"></span>
                     </div>
                     <div>
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white">កន្ត្រកទំនិញរបស់អ្នក</h3>
-                        <p class="text-[11px] text-slate-500 dark:text-slate-400">ពិនិត្យកញ្ចប់ Robux មុនពេលបញ្ជាទិញ</p>
+                        <h4 class="font-bold text-sm leading-tight">Cris Store Bot 🎅</h4>
+                        <p class="text-[10px] text-red-100 flex items-center"><span class="w-1.5 h-1.5 bg-emerald-300 rounded-full mr-1 animate-pulse"></span> Support 24/7</p>
                     </div>
                 </div>
-                <button onclick="toggleCart()" class="w-9 h-9 rounded-xl bg-slate-200/60 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-rose-500 hover:text-white transition">
-                    <i class="fas fa-times"></i>
+                <div class="flex items-center space-x-1.5">
+                    <a href="https://t.me/Cris_Onlyyou" target="_blank" title="ឆាតផ្ទាល់ទៅ Admin Telegram" class="w-8 h-8 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center transition text-xs">
+                        <i class="fab fa-telegram-plane"></i>
+                    </a>
+                    <button onclick="toggleLiveChat()" class="w-8 h-8 rounded-lg bg-white/15 hover:bg-rose-500 flex items-center justify-center transition text-xs">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="chat-messages" class="p-3.5 h-72 overflow-y-auto space-y-3 bg-slate-50 dark:bg-slate-950/60 custom-scrollbar text-xs"></div>
+
+            <div class="px-3 py-2 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex gap-1.5 overflow-x-auto no-scrollbar">
+                <button type="button" onclick="sendQuickReply('តម្លៃ Robux')" class="shrink-0 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/25 px-2.5 py-1 rounded-full text-[11px] font-medium transition">💰 តម្លៃ Robux</button>
+                <button type="button" onclick="sendQuickReply('របៀបទិញ')" class="shrink-0 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 px-2.5 py-1 rounded-full text-[11px] font-medium transition">🛒 របៀបទិញ</button>
+                <button type="button" onclick="sendQuickReply('ស្តុកនៅសល់')" class="shrink-0 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/25 px-2.5 py-1 rounded-full text-[11px] font-medium transition">📦 ឆែកស្តុក</button>
+                <button type="button" onclick="sendQuickReply('ទាក់ទង Admin')" class="shrink-0 bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-500/25 px-2.5 py-1 rounded-full text-[11px] font-medium transition">👨‍💻 ឆាតទៅ Admin</button>
+            </div>
+
+            <form onsubmit="handleChatSubmit(event)" class="p-2.5 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2">
+                <input type="text" id="chat-input" placeholder="សរសេរសំណួររបស់អ្នក..." autocomplete="off" class="flex-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-red-500">
+                <button type="submit" class="w-9 h-9 rounded-xl bg-gradient-to-r from-red-600 to-emerald-600 text-white flex items-center justify-center hover:opacity-90 transition shrink-0 shadow">
+                    <i class="fas fa-paper-plane text-xs"></i>
                 </button>
+            </form>
+        </div>
+
+        <div class="flex items-center space-x-2.5">
+            <div id="chat-bubble" onclick="toggleLiveChat()" class="cursor-pointer hidden sm:flex items-center space-x-2 bg-white dark:bg-slate-900 border border-red-500/30 shadow-xl px-3.5 py-2 rounded-2xl text-xs font-medium hover:border-red-500 transition">
+                <span class="w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
+                <span>🎄 Merry Christmas! មានចម្ងល់សួរបាន</span>
             </div>
-
-            <!-- Cart Body Content -->
-            <div class="p-5 overflow-y-auto flex-1 space-y-5 custom-scrollbar">
-                <!-- Cart Items -->
-                <div id="cart-items" class="space-y-3">
-                    <!-- Injected via JS -->
-                </div>
-
-                <!-- Modern Roblox Account Verification Form with Auto-Check Profile -->
-                <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3.5 shadow-sm">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider flex items-center">
-                            <i class="fas fa-user-circle mr-1.5 text-sm"></i> គណនី Roblox ទទួល Robux
-                        </span>
-                        <span class="text-[10px] text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md font-medium border border-emerald-500/20">
-                            <i class="fas fa-lock"></i> មិនត្រូវការ Password
-                        </span>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Roblox Username (ឈ្មោះក្នុងហ្គេម) *</label>
-                        <div class="relative">
-                            <input type="text" id="roblox-username" oninput="checkRobloxProfile()" placeholder="វាយបញ្ចូល Username..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 font-semibold pr-10 transition">
-                            <div id="username-status-icon" class="absolute right-3 top-3 text-slate-400 text-sm hidden">
-                                <i class="fas fa-spinner animate-spin text-emerald-500"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Auto-Checked Roblox Profile Card (Hidden by default, shown when valid) -->
-                    <div id="roblox-profile-card" class="hidden items-center space-x-3 p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-500/30 shadow-sm animate-fade-in">
-                        <div id="roblox-avatar-container" class="w-12 h-12 rounded-lg bg-slate-200 dark:bg-slate-800 overflow-hidden flex items-center justify-center border border-slate-300 dark:border-slate-700 shrink-0">
-                            <!-- Avatar loaded via JS -->
-                            <i class="fas fa-user text-slate-400"></i>
-                        </div>
-                        <div class="overflow-hidden flex-1">
-                            <div class="flex items-center space-x-1">
-                                <span id="roblox-display-name" class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">DisplayName</span>
-                                <i class="fas fa-check-circle text-emerald-500 text-xs" title="Verified Roblox User"></i>
-                            </div>
-                            <span id="roblox-username-tag" class="text-[11px] text-slate-500 dark:text-slate-400 block truncate">@username</span>
-                        </div>
-                    </div>
-
-                    <p class="text-[11px] text-amber-600 dark:text-amber-400/90 flex items-start bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20">
-                        <i class="fas fa-shield-alt mr-1.5 mt-0.5 shrink-0"></i>
-                        <span>សូមពិនិត្យមើលរូប Profile ហ្គេមឱ្យបានត្រឹមត្រូវមុនពេលបញ្ជាទិញ។ ហាងមិនសួររក Password ឡើយ!</span>
-                    </p>
-                </div>
-            </div>
-
-            <!-- Cart Footer & Checkout -->
-            <div class="p-5 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 space-y-3">
-                <div class="flex items-center justify-between text-sm">
-                    <span class="text-slate-600 dark:text-slate-400 font-medium">សរុបត្រូវទូទាត់៖</span>
-                    <span id="cart-total" class="text-emerald-600 dark:text-emerald-400 text-2xl font-bold">$0.00</span>
-                </div>
-                <button onclick="checkout()" class="w-full bg-gradient-to-r from-emerald-500 to-cyan-600 text-white py-3.5 rounded-xl font-bold hover:opacity-90 transition shadow-lg shadow-emerald-500/25 flex items-center justify-center space-x-2 text-sm sm:text-base">
-                    <i class="fas fa-check-circle"></i>
-                    <span>បញ្ជាទិញ Robux ឥឡូវនេះ</span>
-                </button>
-            </div>
-
+            <button onclick="toggleLiveChat()" title="បើកប្រអប់សារជំនួយការ" class="relative w-14 h-14 bg-gradient-to-tr from-red-600 to-emerald-600 hover:from-red-500 hover:to-emerald-500 text-white rounded-full flex items-center justify-center shadow-2xl shadow-red-500/40 transition-transform hover:scale-105 active:scale-95">
+                <i id="chat-toggle-icon" class="fas fa-comment-dots text-2xl"></i>
+                <span id="chat-unread-badge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow">1</span>
+            </button>
         </div>
     </div>
 
+    <!-- Cart Modal Drawer -->
+    <div id="cart-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 hidden flex justify-end">
+        <div class="bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 w-full sm:max-w-md h-[100dvh] flex flex-col justify-between shadow-2xl">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/50">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500"><i class="fas fa-shopping-bag text-xs"></i></div>
+                    <div>
+                        <h3 class="text-sm font-bold">កន្ត្រកទំនិញរបស់អ្នក 🎁</h3>
+                        <p class="text-[10px] text-slate-500">ពិនិត្យកញ្ចប់ Robux មុនពេលបញ្ជាទិញ</p>
+                    </div>
+                </div>
+                <button onclick="toggleCart()" class="w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-rose-500 hover:text-white transition"><i class="fas fa-times text-sm"></i></button>
+            </div>
+
+            <div class="p-4 overflow-y-auto flex-1 space-y-4 custom-scrollbar">
+                <div id="cart-items" class="space-y-2.5"></div>
+
+                <div class="bg-red-500/5 dark:bg-red-500/10 border border-red-500/20 rounded-2xl p-3.5 space-y-2">
+                    <div class="flex items-center space-x-2 text-red-500 font-bold text-xs uppercase"><i class="fas fa-info-circle"></i><span>របៀបបំពេញព័ត៌មាន</span></div>
+                    <div class="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+                        <div class="flex items-start space-x-2"><span class="bg-red-500/20 text-red-500 font-bold w-4 h-4 rounded-full flex items-center justify-center text-[10px] shrink-0 mt-0.5">1</span><p><strong>Username:</strong> វាយបញ្ចូលឈ្មោះក្នុងហ្គេមរបស់អ្នក</p></div>
+                        <div class="flex items-start space-x-2"><span class="bg-red-500/20 text-red-500 font-bold w-4 h-4 rounded-full flex items-center justify-center text-[10px] shrink-0 mt-0.5">2</span><p><strong>Upload Profile:</strong> ដាក់រូបថត Profile ហ្គេមជូន Admin ពិនិត្យ</p></div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-red-500 uppercase flex items-center"><i class="fas fa-user-circle mr-1.5"></i> គណនី Roblox ទទួល Robux</span>
+                        <span class="text-[10px] text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded font-medium border border-emerald-500/20"><i class="fas fa-lock"></i> មិនត្រូវការ Pass</span>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Roblox Username *</label>
+                        <input type="text" id="roblox-username" placeholder="វាយបញ្ចូល Username..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:border-red-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Upload រូប Profile ហ្គេម</label>
+                        <label for="profile-image-upload" class="flex flex-col items-center justify-center w-full h-24 border-2 border-slate-300 dark:border-slate-700 border-dashed rounded-xl cursor-pointer bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                            <div id="upload-placeholder" class="flex flex-col items-center justify-center pt-2 pb-2 text-center">
+                                <i class="fas fa-cloud-upload-alt text-red-500 text-base mb-1"></i>
+                                <p class="text-xs text-slate-500 font-medium">ចុចទីនេះដើម្បីដាក់រូប Profile ហ្គេម</p>
+                            </div>
+                            <img id="uploaded-preview" class="hidden h-20 w-auto rounded-lg object-contain py-1" alt="Preview">
+                            <input type="file" id="profile-image-upload" accept="image/*" onchange="previewProfileImage(event)" class="hidden" />
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/90 space-y-3">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-slate-500 text-xs font-medium">សរុបត្រូវទូទាត់៖</span>
+                    <span id="cart-total" class="text-red-500 text-xl font-bold">$0.00</span>
+                </div>
+                <button onclick="checkout()" class="w-full bg-gradient-to-r from-red-600 to-emerald-600 text-white py-3.5 rounded-xl font-bold hover:opacity-95 transition shadow-lg shadow-red-500/25 flex items-center justify-center space-x-2 text-sm">
+                    <i class="fas fa-check-circle"></i><span>បញ្ជាទិញឥឡូវនេះ</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal QR Code -->
+    <div id="payment-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md p-5 shadow-2xl text-center space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+                <h3 class="font-bold text-sm">ស្កេន KHQR ដើម្បីទូទាត់ប្រាក់ 🎄</h3>
+                <button onclick="closePaymentModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-800"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="flex flex-col items-center justify-center">
+                <div class="bg-white p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner inline-block">
+                    <img src="logo/khqr-pichvisoth.jpg" alt="Admin KHQR Code" class="w-48 h-48 sm:w-56 sm:h-56 object-contain rounded-lg mx-auto">
+                </div>
+            </div>
+
+            <div>
+                <p class="text-xs text-slate-500">ចំនួនទឹកប្រាក់ត្រូវទូទាត់សរុប៖</p>
+                <p id="qr-total-amount" class="text-2xl font-bold text-red-500">$0.00</p>
+            </div>
+
+            <div class="bg-red-500/10 border border-red-500/20 p-3 rounded-xl text-left space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+                <p class="font-bold text-red-600 dark:text-red-400 mb-1"><i class="fas fa-info-circle mr-1"></i> របៀបបង់ប្រាក់ និងបញ្ជាក់វិក្កយបត្រ៖</p>
+                <p>១. សូមបើក App ធនាគារ រួចស្កេន QR Code ខាងលើដើម្បីបង់ប្រាក់តាមចំនួនទឹកប្រាក់សរុប។</p>
+                <p>២. សូមថតរូប ឬ Save ទុកវិក្កយបត្រ (Slip) ពីធនាគាររបស់អ្នក។</p>
+                <p>៣. Upload រូបភាពវិក្កយបត្រនោះដាក់ចូលប្រអប់ខាងក្រោមនេះ រួចចុចប៊ូតុងផ្ទៀងផ្ទាត់។</p>
+            </div>
+
+            <div class="text-left space-y-1">
+                <label class="block text-xs font-medium text-slate-500">ដាក់រូបភាពវិក្កយបត្រ (Slip) ធនាគារ *</label>
+                <label for="slip-image-upload" class="flex flex-col items-center justify-center w-full h-20 border-2 border-slate-300 dark:border-slate-700 border-dashed rounded-xl cursor-pointer bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-900 transition">
+                    <div id="slip-upload-placeholder" class="flex flex-col items-center justify-center pt-1 pb-1 text-center">
+                        <i class="fas fa-file-invoice-dollar text-red-500 text-sm mb-1"></i>
+                        <p class="text-[11px] text-slate-500 font-medium">ចុចទីនេះដើម្បី Upload រូប Slip បង់ប្រាក់</p>
+                    </div>
+                    <img id="slip-uploaded-preview" class="hidden h-16 w-auto rounded-lg object-contain py-1" alt="Slip Preview">
+                    <input type="file" id="slip-image-upload" accept="image/*" onchange="previewSlipImage(event)" class="hidden" />
+                </label>
+            </div>
+
+            <button onclick="verifyPayment()" class="w-full bg-gradient-to-r from-red-600 to-emerald-600 hover:opacity-90 text-white py-3.5 rounded-xl font-bold text-xs sm:text-sm shadow-lg transition">
+                <i class="fas fa-check-double mr-1.5"></i> ផ្ទៀងផ្ទាត់ការទូទាត់
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal បង្ហាញវិក្កយបត្រលម្អិត -->
+    <div id="receipt-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md p-5 shadow-2xl space-y-4">
+            <div id="receipt-capture-area" class="bg-white dark:bg-slate-900 p-4 rounded-xl border-2 border-dashed border-red-500/40 space-y-3 text-left">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div class="flex items-center space-x-2">
+                        <img src="logo/store-logo.jpg" alt="Logo" class="w-8 h-8 rounded-lg object-cover">
+                        <div>
+                            <h4 class="font-bold text-sm">CRIS STORE 🎄</h4>
+                            <p class="text-[10px] text-red-500 font-medium">វិក្កយបត្រទូទាត់ប្រាក់ផ្លូវការ</p>
+                        </div>
+                    </div>
+                    <span class="bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 text-[10px] font-bold px-2.5 py-1 rounded-full"><i class="fas fa-check-circle mr-1"></i>ជោគជ័យ (PAID)</span>
+                </div>
+                <div class="space-y-1.5 text-xs">
+                    <div class="flex justify-between"><span class="text-slate-500">លេខកូដវិក្កយបត្រ៖</span><span id="rec-order-id" class="font-bold font-mono">RBX-000000</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">កាលបរិច្ឆេទ៖</span><span id="rec-date">--/--/----</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Roblox Username៖</span><span id="rec-username" class="font-bold text-red-500">Username</span></div>
+                </div>
+                <div class="border-t border-b border-slate-200 dark:border-slate-800 py-2.5 space-y-1.5">
+                    <p class="text-[11px] font-semibold text-slate-500">កញ្ចប់ដែលបានទិញ៖</p>
+                    <div id="rec-items-list" class="space-y-1 text-xs"></div>
+                </div>
+                <div class="flex items-center justify-between pt-1">
+                    <span class="text-xs font-bold">ទឹកប្រាក់សរុប៖</span>
+                    <span id="rec-total" class="text-lg font-bold text-red-500">$0.00</span>
+                </div>
+                <p class="text-[10px] text-center text-slate-400 pt-1">សូមរក្សាទុកវិក្កយបត្រនេះ ឬផ្ញើជូន Admin តាម Telegram @Cris_Onlyyou</p>
+            </div>
+            <div class="grid grid-cols-2 gap-2.5">
+                <button onclick="downloadReceiptImage()" class="bg-red-600 hover:bg-red-700 text-white py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 shadow"><i class="fas fa-download"></i><span>ទាញយករូបភាព</span></button>
+                <button onclick="copyReceiptText()" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 border border-slate-200 dark:border-slate-700"><i class="fas fa-copy"></i><span>ចម្លងព័ត៌មាន</span></button>
+            </div>
+            <div class="flex items-center justify-between gap-2 pt-1">
+                <a href="https://t.me/Cris_Onlyyou" target="_blank" class="flex-1 bg-sky-500/10 hover:bg-sky-500/20 text-sky-500 border border-sky-500/30 py-2.5 rounded-xl font-bold text-xs text-center"><i class="fab fa-telegram mr-1"></i> ផ្ញើទៅ Admin</a>
+                <button onclick="closeReceiptModal()" class="px-5 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-rose-500 hover:text-white">បិទ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drawer Modal ប្រវត្តិវិក្កយបត្រ -->
+    <div id="receipts-history-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 hidden flex justify-end">
+        <div class="bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 w-full sm:max-w-md h-[100dvh] flex flex-col justify-between shadow-2xl">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/50">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-500"><i class="fas fa-receipt text-xs"></i></div>
+                    <div>
+                        <h3 class="text-sm font-bold">វិក្កយបត្រដែលបានរក្សាទុក</h3>
+                        <p class="text-[10px] text-slate-500">ប្រវត្តិការបញ្ជាទិញ Robux របស់អ្នក</p>
+                    </div>
+                </div>
+                <button onclick="toggleReceiptsModal()" class="w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-rose-500 hover:text-white"><i class="fas fa-times text-sm"></i></button>
+            </div>
+            <div class="p-4 overflow-y-auto flex-1 space-y-3 custom-scrollbar">
+                <div id="select-all-container" class="hidden items-center justify-between px-1 text-xs text-slate-500">
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="select-all-receipts" onchange="toggleSelectAllReceipts(this)" class="w-4 h-4 rounded text-red-600 focus:ring-red-500 dark:bg-slate-800 dark:border-slate-700">
+                        <span>ជ្រើសរើសទាំងអស់</span>
+                    </label>
+                    <span id="selected-count-label">បានជ្រើសរើស 0</span>
+                </div>
+                <div id="receipts-list-container" class="space-y-3"></div>
+            </div>
+            <div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/90 flex gap-2">
+                <button onclick="deleteSelectedReceipts()" class="flex-1 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white border border-rose-500/30 text-xs font-bold transition flex items-center justify-center space-x-1.5">
+                    <i class="fas fa-trash-alt"></i><span>លុបវិក្កយបត្រដែលបានជ្រើសរើស (Delete)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI Helper & Christmas Snowfall Scripts -->
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('mobile-menu-icon');
+            menu.classList.toggle('hidden');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        }
+
+        function previewProfileImage(event) {
+            const file = event.target.files[0];
+            const placeholder = document.getElementById('upload-placeholder');
+            const preview = document.getElementById('uploaded-preview');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').classList.add('hidden');
+        }
+
+        function closeWarningPopup() {
+            const popup = document.getElementById('warning-popup-modal');
+            if (popup) {
+                popup.classList.add('hidden');
+            }
+        }
+
+        // ❄️ Snowflake Generator Script
+        function createSnowflakes() {
+            const snowContainer = document.getElementById('snow-container');
+            if (!snowContainer) return;
+            snowContainer.innerHTML = '';
+            const snowflakeCount = 14;
+
+            for (let i = 0; i < snowflakeCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'snowflake';
+                star.innerHTML = '❄';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.animationDuration = (Math.random() * 6 + 8) + 's';
+                star.style.animationDelay = (Math.random() * 6) + 's';
+                star.style.fontSize = (Math.random() * 6 + 9) + 'px';
+                snowContainer.appendChild(star);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const popup = document.getElementById('warning-popup-modal');
+            if (popup) {
+                popup.classList.remove('hidden');
+            }
+            createSnowflakes();
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
