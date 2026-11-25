@@ -10,7 +10,7 @@ const robuxPackages = [
 ];
 
 /* ================= TELEGRAM BOT CONFIG ================= */
-const TELEGRAM_BOT_TOKEN = "9285272509:AAHa1nCAbHrkwXHzFs7hfWTS_pfQUtF-PqA";
+const TELEGRAM_BOT_TOKEN = "9285272509:AAHSHHNGzqd86JuPbt7G4HHJgPxHq3ioaxw";
 const TELEGRAM_ADMIN_CHAT_ID = "8011652186";
 
 function base64ToBlob(base64Data) {
