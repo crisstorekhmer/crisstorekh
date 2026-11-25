@@ -9,40 +9,76 @@ const robuxPackages = [
     { id: 8, amount: "1000 Robux", numericAmount: 1000, subtitle: "ចំពោះអាខោនដែលជាប់ kid select unchecked មិនអាចដាក់បានទេ", badge: "Robux Send", price: 9.30, category: "send" }
 ];
 
-/* ================= ONESIGNAL CONFIG ================= */
-const ONESIGNAL_APP_ID = "10feb278-2d2e-432c-a5f7-87598c044371";
-const ONESIGNAL_REST_API_KEY = "Os_v2_app_cd7le6bnfzbszjpxq5myybcdoei2fvgvxtgukznfenmkqwtwkd6uvimu6ajmde3taol3faopepzuvwwgxjo7geqshfcdksghd4g5uzy";
-const STORE_ADMIN_URL = "https://crisstorekhmer.github.io/crisstorekh/";
+/* ================= TELEGRAM BOT CONFIG ================= */
+const TELEGRAM_BOT_TOKEN = "9285272509:AAHa1nCAbHrkwXHzFs7hfWTS_pfQUtF-PqA";
+const TELEGRAM_ADMIN_CHAT_ID = "8011652186";
 
-async function sendOrderPushToAdmin(receipt) {
-    if (!ONESIGNAL_REST_API_KEY || ONESIGNAL_REST_API_KEY.includes("ដាក់_KEY")) {
-        console.warn("មិនទាន់បានកំណត់ OneSignal REST API Key ទេ។");
+function base64ToBlob(base64Data) {
+    const parts = base64Data.split(";base64,");
+    const mimeType = parts[0]?.split(":")[1] || "image/jpeg";
+    const byteCharacters = atob(parts[1] || "");
+    const byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+        const slice = byteCharacters.slice(offset, offset + 512);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+        }
+        byteArrays.push(new Uint8Array(byteNumbers));
+    }
+
+    return new Blob(byteArrays, { type: mimeType });
+}
+
+async function sendOrderToTelegramBot(receipt) {
+    if (
+        !TELEGRAM_BOT_TOKEN ||
+        TELEGRAM_BOT_TOKEN.includes("ដាក់_BOT_TOKEN") ||
+        !TELEGRAM_ADMIN_CHAT_ID ||
+        TELEGRAM_ADMIN_CHAT_ID.includes("ដាក់_CHAT_ID")
+    ) {
+        console.warn("មិនទាន់បានកំណត់ TELEGRAM_BOT_TOKEN ឬ TELEGRAM_ADMIN_CHAT_ID ទេ។");
         return;
     }
 
-    const itemsSummary = receipt.items
-        .map(i => `${i.amount} x${i.qty}`)
-        .join(", ");
+    const itemsText = receipt.items
+        .map(i => `• ${i.amount} x${i.qty} ($${i.subtotal})`)
+        .join("\n");
+
+    const caption =
+        `🚨 *Order Robux ថ្មី - CRIS STORE*\n` +
+        `🧾 លេខកូដ៖ \`${receipt.orderId}\`\n` +
+        `🕒 កាលបរិច្ឆេទ៖ ${receipt.date}\n` +
+        `👤 Roblox Username៖ *${receipt.username}*\n\n` +
+        `📦 *កញ្ចប់ដែលបានទិញ៖*\n${itemsText}\n\n` +
+        `💵 *សរុបទឹកប្រាក់៖ $${receipt.total}*`;
 
     try {
-        await fetch("https://api.onesignal.com/notifications", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Key ${ONESIGNAL_REST_API_KEY}`
-            },
-            body: JSON.stringify({
-                app_id: ONESIGNAL_APP_ID,
-                included_segments: ["All"],
-                headings: { en: "🚨 Order Robux ថ្មី - Cris Store" },
-                contents: {
-                    en: `User: ${receipt.username} | ${itemsSummary} | $${receipt.total} (${receipt.orderId})`
-                },
-                url: STORE_ADMIN_URL
-            })
-        });
+        if (receipt.slipImage && receipt.slipImage.startsWith("data:image/")) {
+            const formData = new FormData();
+            formData.append("chat_id", TELEGRAM_ADMIN_CHAT_ID);
+            formData.append("caption", caption);
+            formData.append("parse_mode", "Markdown");
+            formData.append("photo", base64ToBlob(receipt.slipImage), `slip-${receipt.orderId}.jpg`);
+
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+                method: "POST",
+                body: formData
+            });
+        } else {
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_ADMIN_CHAT_ID,
+                    text: caption,
+                    parse_mode: "Markdown"
+                })
+            });
+        }
     } catch (err) {
-        console.error("បរាជ័យក្នុងការផ្ញើ OneSignal Notification:", err);
+        console.error("បរាជ័យក្នុងការផ្ញើសារទៅ Telegram Bot:", err);
     }
 }
 
@@ -63,60 +99,20 @@ if (!Array.isArray(savedReceipts)) savedReceipts = [];
 
 let currentViewingReceipt = null;
 
+const INITIAL_ROBUX_STOCK = 10000;
+const STOCK_RESET_FLAG = 'cris_robux_stock_10000_set';
+
 let rawStock = parseInt(localStorage.getItem('cris_robux_stock'), 10);
-let currentStock = Number.isNaN(rawStock) ? 3000 : rawStock;
+let currentStock = Number.isNaN(rawStock) ? INITIAL_ROBUX_STOCK : rawStock;
+
+if (!localStorage.getItem(STOCK_RESET_FLAG)) {
+    currentStock = INITIAL_ROBUX_STOCK;
+    localStorage.setItem(STOCK_RESET_FLAG, 'true');
+}
+
 localStorage.setItem('cris_robux_stock', String(currentStock));
 
 let currentFilter = 'all';
-
-function calculateCustomPrice() {
-    const input = document.getElementById('custom-robux-input');
-    const display = document.getElementById('custom-price-display');
-    if (!input || !display) return;
-    let val = parseInt(input.value, 10) || 0;
-    if (val < 10) val = 10;
-    display.innerText = '$' + (val / 100).toFixed(2);
-}
-
-function addCustomToCart() {
-    if (currentStock <= 0) { alert('❌ Robux ក្នុងស្តុកបានលក់អស់ហើយ!'); return; }
-    const input = document.getElementById('custom-robux-input');
-    if (!input) return;
-    let amount = parseInt(input.value, 10) || 0;
-    if (amount < 10) { alert('❌ សូមបញ្ចូលចំនួនយ៉ាងតិច 10 Robux!'); return; }
-
-    let existingInCart = cart
-        .filter(item => item.numericAmount > 0)
-        .reduce((sum, item) => sum + (item.numericAmount * item.qty), 0);
-    let customItemInCart = cart.find(item => item.id === 'custom-robux');
-    let currentCustomQty = customItemInCart ? customItemInCart.numericAmount * customItemInCart.qty : 0;
-
-    if ((existingInCart - currentCustomQty) + amount > currentStock) {
-        alert(`❌ ចំនួន Robux សរុបលើសពីស្តុកក្នុងហាងហើយ! (ស្តុក៖ ${currentStock})`);
-        return;
-    }
-
-    let price = amount / 100;
-    if (customItemInCart) {
-        customItemInCart.numericAmount = amount;
-        customItemInCart.amount = amount + " Robux";
-        customItemInCart.price = price;
-        customItemInCart.qty = 1;
-    } else {
-        cart.push({
-            id: 'custom-robux',
-            amount: amount + " Robux",
-            numericAmount: amount,
-            subtitle: "កញ្ចប់កុម្មង់តាមចិត្ត",
-            badge: "Custom Send",
-            price: price,
-            category: "send",
-            qty: 1
-        });
-    }
-    saveAndUpdateCart();
-    toggleCart();
-}
 
 function updateStockDisplay() {
     const stockEl = document.getElementById('stock-display');
@@ -415,7 +411,7 @@ async function verifyPayment() {
         slipImage: slipPreview.src
     };
 
-    await sendOrderPushToAdmin(newReceipt);
+    await sendOrderToTelegramBot(newReceipt);
 
     savedReceipts.unshift(newReceipt);
     localStorage.setItem('cris_robux_receipts', JSON.stringify(savedReceipts));
@@ -648,6 +644,19 @@ function escapeHTML(str) {
     }[tag]));
 }
 
+function generateBotResponse(rawMsg) {
+    const msg = rawMsg.toLowerCase();
+    if (msg.includes('តម្លៃ') || msg.includes('price') || msg.includes('robux')) {
+        appendBotMessage("សូមជ្រើសរើសកញ្ចប់ត្រៀមស្រាប់នៅផ្នែក <strong>កញ្ចប់ Robux</strong> ខាងលើ ឬចុច +/- ដើម្បីបង្កើនចំនួនកញ្ចប់បាន។");
+    } else if (msg.includes('របៀបទិញ') || msg.includes('ទិញ') || msg.includes('buy')) {
+        appendBotMessage("១. ជ្រើសរើសកញ្ចប់ចូលកន្ត្រក<br>២. បំពេញ <strong>Roblox Username</strong> (មិនបាច់ប្រាប់ Password ទេ)<br>៣. ស្កេន KHQR បង់ប្រាក់ រួច Upload រូប Slip ដើម្បីបញ្ជាក់។");
+    } else if (msg.includes('ស្តុក') || msg.includes('stock')) {
+        appendBotMessage(`បច្ចុប្បន្នស្តុក Robux នៅសល់៖ <strong>${currentStock}</strong>`);
+    } else {
+        appendBotMessage(`សូមទាក់ទង Admin ផ្ទាល់តាម Telegram: <a href="https://t.me/Cris_Onlyyou" target="_blank" class="text-red-500 underline font-semibold">@Cris_Onlyyou</a> ដើម្បីទទួលបានជំនួយរហ័ស។`);
+    }
+}
+
 function sendQuickReply(topic) {
     appendUserMessage(topic);
     generateBotResponse(topic);
@@ -664,69 +673,11 @@ function handleChatSubmit(event) {
     generateBotResponse(text);
 }
 
-function generateBotResponse(userText) {
-    const q = userText.toLowerCase();
-
-    if (q.includes('តម្លៃ') || q.includes('price') || (q.includes('robux') && q.includes('ប៉ុន្មាន'))) {
-        appendBotMessage(`
-            <strong>💰 តារាងតម្លៃ Robux Send៖</strong><br>
-            • 25 Robux = <strong>$0.30</strong><br>
-            • 50 Robux = <strong>$0.55</strong><br>
-            • 100 Robux = <strong>$0.99</strong><br>
-            • 500 Robux = <strong>$4.80</strong><br>
-            • 1000 Robux = <strong>$9.30</strong><br>
-            <span class="text-[11px] text-red-500">ឬកុម្មង់តាមចិត្ត៖ 100 Robux = $1.00</span>
-        `);
-    } else if (q.includes('របៀបទិញ') || q.includes('ទិញ') || q.includes('how') || q.includes('buy')) {
-        appendBotMessage(`
-            <strong>🛒 របៀបបញ្ជាទិញងាយៗ៖</strong><br>
-            ១. ជ្រើសរើសកញ្ចប់ Robux រួចចុច <strong>បន្ថែមចូលកន្ត្រក</strong><br>
-            ២. បំពេញ <strong>Roblox Username</strong> (មិនត្រូវការ Password ទេ)<br>
-            ៣. ស្កេនបង់ប្រាក់តាម <strong>KHQR (ABA, ACLEDA, Wing)</strong> និង Upload រូប Slip<br>
-            ៤. ផ្ញើវិក្កយបត្រទៅ Telegram Admin ដើម្បីទទួល Robux ភ្លាមៗ!
-        `);
-    } else if (q.includes('ស្តុក') || q.includes('stock') || q.includes('ឆែក')) {
-        const stockStatus = currentStock > 0
-            ? `បច្ចុប្បន្នហាងយើងមានស្តុក <strong>${currentStock} Robux</strong> ត្រៀមរួចរាល់សម្រាប់បញ្ចូលជូនភ្លាមៗ! ✅`
-            : `សូមអភ័យទោស! បច្ចុប្បន្ន Robux ក្នុងស្តុកអស់បណ្តោះអាសន្នហើយ ❌ សូមឆាតសួរ Admin ដើម្បីដឹងពេលស្តុកចូលថ្មី។`;
-        appendBotMessage(`📦 <strong>ស្ថានភាពស្តុក៖</strong><br>${stockStatus}`);
-    } else if (q.includes('សុវត្ថិភាព') || q.includes('password') || q.includes('ban') || q.includes('kid')) {
-        appendBotMessage(`
-            🛡️ <strong>សុវត្ថិភាព ១០០%៖</strong><br>
-            • ប្រើតែ <strong>Username</strong> ប៉ុណ្ណោះ មិនសួរ Password ឡើយ។<br>
-            • ជាប្រភេទ Robux ស្អាត គ្មានការ Ban Account។<br>
-            • <em>ចំណាំ៖ អាខោនដែលជាប់ Kid Select Unchecked មិនអាចដាក់កញ្ចប់ Robux Send បានទេ។</em>
-        `);
-    } else if (q.includes('admin') || q.includes('telegram') || q.includes('ទាក់ទង') || q.includes('ឆាត') || q.includes('ម៉ោង')) {
-        appendBotMessage(`
-            👨‍💻 <strong>ទំនាក់ទំនង Admin ផ្ទាល់៖</strong><br>
-            • ម៉ោងធ្វើការ៖ <strong>7:00 ព្រឹក - 11:00 យប់</strong><br>
-            • Telegram: <a href="https://t.me/Cris_Onlyyou" target="_blank" class="text-sky-500 font-bold underline">@Cris_Onlyyou</a><br>
-            <a href="https://t.me/Cris_Onlyyou" target="_blank" class="mt-2 inline-flex items-center space-x-1.5 bg-sky-500 text-white px-3 py-1.5 rounded-xl font-bold text-[11px] hover:bg-sky-600 transition">
-                <i class="fab fa-telegram-plane"></i><span>ចុចឆាតទៅ Telegram ឥឡូវនេះ</span>
-            </a>
-        `);
-    } else {
-        appendBotMessage(`
-            អរគុណសម្រាប់សាររបស់អ្នក! 😊 សម្រាប់ព័ត៌មានលម្អិត ឬជំនួយបន្ទាន់ សូមចុចឆាតទៅកាន់ Admin ផ្ទាល់តាម Telegram ខាងក្រោម៖<br>
-            <a href="https://t.me/Cris_Onlyyou" target="_blank" class="mt-2 inline-flex items-center space-x-1.5 bg-sky-500 text-white px-3 py-1.5 rounded-xl font-bold text-[11px] hover:bg-sky-600 transition">
-                <i class="fab fa-telegram-plane"></i><span>ឆាតទៅ @Cris_Onlyyou</span>
-            </a>
-        `);
-    }
-}
-
-function bootStoreApp() {
+/* ================= INITIALIZE ON LOAD ================= */
+document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     updateStockDisplay();
-    renderProducts('all');
+    renderProducts(currentFilter);
     updateCartUI();
     updateReceiptsUI();
-    calculateCustomPrice();
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bootStoreApp);
-} else {
-    bootStoreApp();
-}
+});

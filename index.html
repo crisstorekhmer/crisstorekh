@@ -124,7 +124,7 @@
             <div class="w-full sm:max-w-lg lg:w-5/12">
                 <div class="bg-white dark:bg-slate-900 border-2 border-red-500/30 rounded-2xl p-5 sm:p-6 shadow-2xl relative">
                     <div class="absolute -top-3 right-4 bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow">🎄 Christmas</div>
-                    
+
                     <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
                         <div class="flex items-center space-x-3">
                             <div class="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center border border-red-500/20 overflow-hidden">
@@ -154,37 +154,8 @@
         </div>
     </section>
 
-    <!-- Custom Robux Calculator Section -->
-    <section class="py-8 sm:py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-gradient-to-r from-red-500/10 via-emerald-500/10 to-red-500/10 border-2 border-red-500/30 rounded-2xl p-5 sm:p-8 shadow-lg">
-            <div class="max-w-xl mx-auto text-center">
-                <span class="bg-red-500 text-white text-xs font-bold px-3.5 py-1 rounded-full uppercase shadow">
-                    <i class="fas fa-calculator mr-1"></i> កុម្មង់ចំនួនតាមចិត្ត (Custom)
-                </span>
-                <h3 class="text-lg sm:text-2xl font-bold mt-3">ចង់ទិញចំនួនប៉ុន្មានក៏បាន (ចាប់ពី 10 Robux ឡើងទៅ)</h3>
-                <p class="text-xs sm:text-sm text-slate-500 mt-1">អត្រាតម្លៃ៖ 100 Robux = $1.00</p>
-                
-                <div class="mt-5 flex flex-col sm:flex-row items-center gap-3">
-                    <div class="w-full text-left">
-                        <label class="text-xs text-slate-600 dark:text-slate-400 font-medium">បញ្ចូលចំនួន Robux:</label>
-                        <input type="number" id="custom-robux-input" min="10" value="100" oninput="calculateCustomPrice()" class="w-full mt-1 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-base font-bold focus:outline-none focus:border-red-500">
-                    </div>
-                    <div class="w-full sm:w-44 bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-300 dark:border-slate-700 flex sm:block items-center justify-between text-left sm:text-right">
-                        <span class="text-xs text-slate-500 dark:text-slate-400 block">តម្លៃសរុប៖</span>
-                        <span id="custom-price-display" class="text-xl sm:text-2xl font-bold text-red-500">$1.00</span>
-                    </div>
-                </div>
-                
-                <button onclick="addCustomToCart()" class="mt-4 w-full bg-gradient-to-r from-red-600 to-emerald-600 text-white py-3.5 rounded-xl font-bold hover:opacity-90 transition shadow-lg shadow-red-500/25 flex items-center justify-center space-x-2">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span>បន្ថែមចូលកន្ត្រក</span>
-                </button>
-            </div>
-        </div>
-    </section>
-
     <!-- Robux Packages Section -->
-    <section id="packages" class="py-8 sm:py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="packages" class="py-10 sm:py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-10 gap-4">
             <div>
                 <h2 class="text-xl sm:text-2xl md:text-3xl font-bold flex items-center">កញ្ចប់ Robux ត្រៀមស្រាប់ <span class="ml-2 text-xl">🎁</span></h2>
@@ -377,7 +348,7 @@
                 <h3 class="font-bold text-sm">ស្កេន KHQR ដើម្បីទូទាត់ប្រាក់ 🎄</h3>
                 <button onclick="closePaymentModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-800"><i class="fas fa-times"></i></button>
             </div>
-            
+
             <div class="flex flex-col items-center justify-center">
                 <div class="bg-white p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner inline-block">
                     <img src="logo/khqr-pichvisoth.jpg" alt="Admin KHQR Code" class="w-48 h-48 sm:w-56 sm:h-56 object-contain rounded-lg mx-auto">
