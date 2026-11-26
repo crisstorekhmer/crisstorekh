@@ -1,6 +1,4 @@
 const robuxPackages = [
-    { id: 1, amount: "25 Robux", numericAmount: 25, subtitle: "ចំពោះអាខោនដែលជាប់ kid select unchecked មិនអាចដាក់បានទេ", badge: "Robux Send", price: 0.30, category: "send" },
-    { id: 2, amount: "50 Robux", numericAmount: 50, subtitle: "ចំពោះអាខោនដែលជាប់ kid select unchecked មិនអាចដាក់បានទេ", badge: "Robux Send", price: 0.55, category: "send" },
     { id: 3, amount: "100 Robux", numericAmount: 100, subtitle: "ចំពោះអាខោនដែលជាប់ kid select unchecked មិនអាចដាក់បានទេ", badge: "Robux Send", price: 0.99, category: "send" },
     { id: 4, amount: "200 Robux", numericAmount: 200, subtitle: "ចំពោះអាខោនដែលជាប់ kid select unchecked មិនអាចដាក់បានទេ", badge: "Robux Send", price: 1.99, category: "send" },
     { id: 5, amount: "300 Robux", numericAmount: 300, subtitle: "ចំពោះអាខោនដែលជាប់ kid select unchecked មិនអាចដាក់បានទេ", badge: "Robux Send", price: 2.99, category: "send" },
